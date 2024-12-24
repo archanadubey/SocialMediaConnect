@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 @Entity
-@Table(name = "SocialPosts")
+@Table(name = "SocialPosts" ,schema = "sposts")
 public class PostEntity {
 
     @Id
