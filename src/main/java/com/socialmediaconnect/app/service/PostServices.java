@@ -19,7 +19,7 @@ public interface PostServices {
 
     // update post
 
-    PostDto updatePost(PostDto postToBeUpdated);
+    PostDto updatePost(PostDto postDto,long postIdToBeUpdated);
     // delete post
     boolean deletePostByID(long idToBeDeleted);
 }
