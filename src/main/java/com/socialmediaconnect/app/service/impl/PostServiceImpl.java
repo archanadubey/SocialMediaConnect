@@ -2,10 +2,14 @@ package com.socialmediaconnect.app.service.impl;
 
 import com.socialmediaconnect.app.dto.PostDto;
 import com.socialmediaconnect.app.entity.PostEntity;
+import com.socialmediaconnect.app.exceptions.ResourceNotFoundException;
 import com.socialmediaconnect.app.repository.PostRepository;
 import com.socialmediaconnect.app.service.PostServices;
 import com.socialmediaconnect.app.utils.PostEntityMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostServices {
+
+    //private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Autowired
     private PostRepository postRepository;
@@ -58,12 +65,36 @@ public class PostServiceImpl implements PostServices {
     }
 
     @Override
-    public PostDto updatePost(PostDto postToBeUpdated) {
-        return null;
+    public PostDto updatePost(PostDto postDto, long postIdToBeUpdated) {
+        // first need to find the post by Id
+        // we need postDto but we can get postEntity from the repository So,
+        PostEntity postEntityToBeUpdated = this.postRepository.findById(postIdToBeUpdated)
+                .orElseThrow(() -> new RuntimeException("Post not found " + postIdToBeUpdated));
+
+            // map PostDto to return postEntity from repository which is here postEntityToBeUpdated for postId
+        postEntityToBeUpdated.setTitle(postDto.getTitle());
+        postEntityToBeUpdated.setDescription(postDto.getDiscription());
+        postEntityToBeUpdated.setContent(postDto.getContent());
+        // Now
+        // save postEntityToBeUpdated to repository
+
+       PostEntity postEntityUpdated  = this.postRepository.save(postEntityToBeUpdated);
+
+            // map postEntityUpdated to postSto
+
+        return  this.postEntityMapper.mapPostEntityToPostDto(postEntityUpdated);
+
     }
 
     @Override
     public boolean deletePostByID(long idToBeDeleted) {
-        return false;
+        try {
+           PostEntity PostEntityIdFormDB =  this.postRepository.findById(idToBeDeleted).orElseThrow(() ->new ResourceNotFoundException( "Error while getting the post to delete"+idToBeDeleted));
+            this.postRepository.delete(PostEntityIdFormDB);
+        }catch (Exception e){
+            LOGGER.error("Exception while deleting the post by id/idToBeDeleted not found" + idToBeDeleted);
+            return false;
+        }
+        return true;
     }
 }
