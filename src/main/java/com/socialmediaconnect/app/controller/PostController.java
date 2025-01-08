@@ -1,9 +1,7 @@
 package com.socialmediaconnect.app.controller;
 
 
-//import org.springframework.web.bind.annotation.GetMapping;
 import com.socialmediaconnect.app.dto.PostDto;
-import com.socialmediaconnect.app.entity.PostEntity;
 import com.socialmediaconnect.app.service.PostServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
